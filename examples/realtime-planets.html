@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Real-time Planetary Positions</title>
+    <style>
+        .chart-container {
+            width: 800px;
+            height: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="chart" class="chart-container"></div>
+    
+    <script src="../dist/astrochart.js"></script>
+    <script>
+        // Initialize the chart
+        const chart = new astrochart.Chart('chart', 800, 800);
+        
+        // Example data structure for planets
+        const data = {
+            planets: {
+                "Sun": [0],
+                "Moon": [45],
+                "Mercury": [120],
+                "Venus": [180],
+                "Mars": [210],
+                "Jupiter": [240],
+                "Saturn": [280],
+                "Uranus": [300],
+                "Neptune": [320],
+                "Pluto": [340]
+            },
+            // Example cusps data
+            cusps: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+        };
+
+        // Draw initial chart
+        chart.radix(data);
+
+        // Function to update planet positions
+        function updatePlanets() {
+            // Here you would normally fetch real planetary positions
+            // For demo, let's just increment positions
+            for (let planet in data.planets) {
+                data.planets[planet][0] = (data.planets[planet][0] + 1) % 360;
+            }
+            
+            // Update the chart with new positions
+            chart.transit(data);
+        }
+
+        // Update every second
+        setInterval(updatePlanets, 1000);
+    </script>
+</body>
+</html> 

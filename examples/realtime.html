@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Real-time Planetary Chart</title>
+    <style>
+        .chart-container {
+            width: 800px;
+            height: 800px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="chart" class="chart-container"></div>
+    <script src="../dist/astrochart.js"></script>
+    <script>
+        const realtimeChart = new astrochart.RealtimeChart('chart', 800, 800);
+    </script>
+</body>
+</html> 
