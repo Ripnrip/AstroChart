@@ -1,5 +1,5 @@
-import { Chart } from '../src/index';
-import { PlanetCalculator } from '../src/planetCalculator';
+import { Chart } from '../project/src/index';
+import { PlanetCalculator } from '../project/src/planetCalculator';
 
 export class RealtimeChart {
     private chart: Chart;

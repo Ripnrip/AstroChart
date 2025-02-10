@@ -34,6 +34,12 @@ declare class Chart {
    */
     radix(data: AstroData): Radix;
     /**
+     * Display transit horoscope
+     * @param {AstroData} data - Transit data containing planet positions and cusps
+     * @returns {Radix} The radix instance used for transit
+     */
+    transit(data: AstroData): Radix;
+    /**
      * Scale chart
      *
      * @param {int} factor

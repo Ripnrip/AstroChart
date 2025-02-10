@@ -69,6 +69,25 @@ class Chart {
   }
 
   /**
+   * Display transit horoscope
+   * @param {AstroData} data - Transit data containing planet positions and cusps
+   * @returns {Radix} The radix instance used for transit
+   */
+  transit (data: AstroData): Radix {
+    const radix = new Radix(this.paper, this.cx, this.cy, this.radius, data, this.settings)
+
+    radix.drawBg()
+    radix.drawUniverse()
+    radix.drawRuler()
+    radix.drawPoints()
+    radix.drawCusps()
+    radix.drawAxis()
+    radix.drawCircles()
+
+    return radix
+  }
+
+  /**
    * Scale chart
    *
    * @param {int} factor

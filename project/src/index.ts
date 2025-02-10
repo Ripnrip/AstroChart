@@ -1,6 +1,7 @@
 import Chart from './chart'
 import AspectCalculator from './aspect'
-import { Settings } from './settings'
+import { PlanetCalculator } from './planetCalculator'
+import type { Settings } from './settings'
 
-export { Chart, AspectCalculator, Settings }
+export { Chart, AspectCalculator, PlanetCalculator, Settings }
 export default Chart
