@@ -21,6 +21,7 @@ export declare class PlanetCalculator {
     private initializeDailyPositions;
     private loadDailyPositions;
     private getStartPosition;
+    private get2025Position;
     calculatePositions(): PlanetData;
     calculateAspects(): AspectInfo[];
     private checkAspects;

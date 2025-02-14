@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AstroChart Real-time Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        #chart {
+            width: 800px;
+            height: 800px;
+            background: #fff;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time Planetary Positions</h1>
+        <div class="controls">
+            <button id="startBtn">Start</button>
+            <button id="stopBtn" disabled>Stop</button>
+        </div>
+        <div id="chart"></div>
+        <div class="status">Status: <span id="statusText">Stopped</span></div>
+    </div>
+
+    <script type="module">
+        import { AstroChartExample } from './usage.ts';
+
+        let chartInstance = null;
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const statusText = document.getElementById('statusText');
+
+        function updateButtonStates(isRunning) {
+            startBtn.disabled = isRunning;
+            stopBtn.disabled = !isRunning;
+            statusText.textContent = isRunning ? 'Running' : 'Stopped';
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (!chartInstance) {
+                chartInstance = new AstroChartExample('chart', 800, 800);
+                updateButtonStates(true);
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            if (chartInstance) {
+                chartInstance.stop();
+                chartInstance = null;
+                updateButtonStates(false);
+            }
+        });
+
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (chartInstance) {
+                chartInstance.stop();
+            }
+        });
+    </script>
+</body>
+</html> 

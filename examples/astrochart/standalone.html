@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>AstroChart Standalone Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        #paper {
+            width: 800px;
+            height: 800px;
+            background: #fff;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AstroChart Demo</h1>
+        <div class="controls">
+            <button id="startBtn">Start</button>
+            <button id="stopBtn">Stop</button>
+        </div>
+        <div id="paper"></div>
+    </div>
+
+    <script src="https://unpkg.com/@astrodraw/astrochart"></script>
+    <script>
+        let chart = null;
+        let radixInstance = null;
+        let animationFrame = null;
+        let totalAngle = 0;
+        let speed = 0.5;
+
+        function start() {
+            if (!chart) {
+                chart = new astrochart.Chart('paper', 800, 800, {
+                    MARGIN: 100,
+                    SYMBOL_SCALE: 0.8,
+                    POINTS_TEXT_SIZE: 10
+                });
+                totalAngle = 0;
+                const data = {
+                    planets: {
+                        "Sun": [0],
+                        "Moon": [45],
+                        "Mercury": [90],
+                        "Venus": [135],
+                        "Mars": [180],
+                        "Jupiter": [225],
+                        "Saturn": [270],
+                        "Uranus": [315],
+                        "Neptune": [30],
+                        "Pluto": [60]
+                    },
+                    cusps: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+                };
+                radixInstance = chart.radix(data);
+                update();
+            }
+        }
+
+        function update() {
+            totalAngle += speed;
+            
+            // Stop after one complete rotation (360 degrees)
+            if (totalAngle >= 360) {
+                stop();
+                return;
+            }
+
+            const data = {
+                planets: {
+                    "Sun": [totalAngle % 360],
+                    "Moon": [(totalAngle + 45) % 360],
+                    "Mercury": [(totalAngle + 90) % 360],
+                    "Venus": [(totalAngle + 135) % 360],
+                    "Mars": [(totalAngle + 180) % 360],
+                    "Jupiter": [(totalAngle + 225) % 360],
+                    "Saturn": [(totalAngle + 270) % 360],
+                    "Uranus": [(totalAngle + 315) % 360],
+                    "Neptune": [(totalAngle + 30) % 360],
+                    "Pluto": [(totalAngle + 60) % 360]
+                },
+                cusps: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+            };
+
+            radixInstance.transit(data);
+            animationFrame = requestAnimationFrame(update);
+        }
+
+        function stop() {
+            if (animationFrame) {
+                cancelAnimationFrame(animationFrame);
+                animationFrame = null;
+            }
+            // Reset for next animation
+            chart = null;
+            totalAngle = 0;
+        }
+
+        document.getElementById('startBtn').addEventListener('click', start);
+        document.getElementById('stopBtn').addEventListener('click', stop);
+    </script>
+</body>
+</html> 

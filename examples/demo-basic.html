@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AstroChart Basic Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .main-container {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .chart-container {
+            width: 800px;
+            height: 800px;
+        }
+        .info-panel {
+            min-width: 300px;
+            padding: 20px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+        .planet-info {
+            margin: 5px 0;
+            padding: 5px;
+        }
+        .retrograde {
+            color: #ff4500;
+        }
+        .controls {
+            margin: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            margin: 0 10px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        button:disabled {
+            background: #cccccc;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <div class="controls">
+        <button id="animateBtn">Animate Year Progress</button>
+        <button id="resetBtn">Reset to Jan 1st</button>
+    </div>
+    <div class="main-container">
+        <div id="chart" class="chart-container"></div>
+        <div class="info-panel">
+            <h2>Planetary Positions</h2>
+            <div id="positions"></div>
+        </div>
+    </div>
+
+    <script src="../dist/astrochart.js"></script>
+    <script>
+        // Initialize chart and calculator
+        const chart = new astrochart.Chart('chart', 800, 800);
+        const calculator = new astrochart.PlanetCalculator();
+        let chartInstance = null;
+        let isAnimating = false;
+
+        // Get positions for a specific date in 2025
+        function getPositionsForDate(date) {
+            const planetData = calculator.calculatePositions();
+            return {
+                planets: planetData,
+                cusps: [0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330]
+            };
+        }
+
+        // Update position display
+        function updatePositionDisplay(planetData) {
+            const positionsDiv = document.getElementById('positions');
+            positionsDiv.innerHTML = Object.entries(planetData.planets)
+                .map(([planet, [position, speed]]) => {
+                    const isRetrograde = speed < 0;
+                    return `
+                        <div class="planet-info ${isRetrograde ? 'retrograde' : ''}">
+                            ${planet}: ${position.toFixed(2)}° ${isRetrograde ? '☿' : ''}
+                        </div>
+                    `;
+                })
+                .join('');
+        }
+
+        // Initialize chart with January 1st positions
+        function initializeChart() {
+            const januaryFirst = new Date(2025, 0, 1);
+            const initialData = getPositionsForDate(januaryFirst);
+            chartInstance = chart.radix(initialData);
+            updatePositionDisplay(initialData);
+        }
+
+        // Animate to current date
+        function animateToCurrentDate() {
+            if (isAnimating) return;
+            isAnimating = true;
+            document.getElementById('animateBtn').disabled = true;
+
+            const currentDate = new Date();
+            const targetData = getPositionsForDate(currentDate);
+            
+            // Animate over 3 seconds
+            chartInstance.transit(targetData).animate(targetData, 3, false, () => {
+                isAnimating = false;
+                document.getElementById('animateBtn').disabled = false;
+                updatePositionDisplay(targetData);
+            });
+        }
+
+        // Reset to January 1st
+        function resetToJanuaryFirst() {
+            if (isAnimating) return;
+            isAnimating = true;
+            document.getElementById('resetBtn').disabled = true;
+
+            const januaryFirst = new Date(2025, 0, 1);
+            const initialData = getPositionsForDate(januaryFirst);
+            
+            // Animate back over 3 seconds
+            chartInstance.transit(initialData).animate(initialData, 3, true, () => {
+                isAnimating = false;
+                document.getElementById('resetBtn').disabled = false;
+                updatePositionDisplay(initialData);
+            });
+        }
+
+        // Initialize
+        window.onload = function() {
+            initializeChart();
+            
+            // Add button event listeners
+            document.getElementById('animateBtn').addEventListener('click', animateToCurrentDate);
+            document.getElementById('resetBtn').addEventListener('click', resetToJanuaryFirst);
+        };
+    </script>
+</body>
+</html> 

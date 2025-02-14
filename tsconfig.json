@@ -4,11 +4,20 @@
     "noImplicitAny": true,
     "module": "es6",
     "target": "es5",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "allowJs": true,
     "moduleResolution": "node",
     "declaration": true,
-    "strictNullChecks": true
+    "strictNullChecks": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "@astrodraw/astrochart": ["project/src/index.ts"]
+    }
   },
-  "exclude": ["project/src/**/*.test.ts", "dist"]
+  "exclude": ["project/src/**/*.test.ts", "dist"],
+  "include": ["project/src/**/*", "examples/react/**/*"]
 }

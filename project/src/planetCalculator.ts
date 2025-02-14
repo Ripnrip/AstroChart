@@ -1,4 +1,5 @@
 import type { AspectData } from './settings'
+import { ephemeris2025, getPlanetPosition } from './data/ephemeris2025'
 
 export interface PlanetPosition {
     position: number
@@ -100,22 +101,41 @@ export class PlanetCalculator {
         return startPositions[planet] || 0;
     }
 
+    // Add a method to get position for specific date in 2025
+    private get2025Position(planet: string, dayOfYear: number): number {
+        // Monthly positions for 2025 (first day of each month)
+        const positions2025: Record<string, number[]> = {
+            "Sun": [280.5, 311.2, 341.6, 11.6, 41.6, 71.5, 101.5, 131.5, 161.5, 191.5, 221.5, 251.5],
+            "Moon": [125.3, 138.5, 151.7, 164.9, 178.1, 191.3, 204.5, 217.7, 230.9, 244.1, 257.3, 270.5],
+            "Mercury": [265.2, 292.3, 325.6, 355.8, 25.4, 48.9, 82.3, 115.6, 142.8, 168.9, 195.6, 228.9],
+            "Venus": [305.8, 335.9, 5.9, 35.9, 65.9, 95.9, 125.9, 155.9, 185.9, 215.9, 245.9, 275.9],
+            "Mars": [98.4, 113.2, 128.0, 142.8, 157.6, 172.4, 187.2, 202.0, 216.8, 231.6, 246.4, 261.2],
+            "Jupiter": [35.2, 36.9, 38.6, 40.3, 42.0, 43.7, 45.4, 47.1, 48.8, 50.5, 52.2, 53.9],
+            "Saturn": [5.9, 6.9, 7.9, 8.9, 9.9, 10.9, 11.9, 12.9, 13.9, 14.9, 15.9, 16.9],
+            "Uranus": [44.8, 45.2, 45.6, 46.0, 46.4, 46.8, 47.2, 47.6, 48.0, 48.4, 48.8, 49.2],
+            "Neptune": [355.2, 355.5, 355.8, 356.1, 356.4, 356.7, 357.0, 357.3, 357.6, 357.9, 358.2, 358.5],
+            "Pluto": [298.6, 298.8, 299.0, 299.2, 299.4, 299.6, 299.8, 300.0, 300.2, 300.4, 300.6, 300.8]
+        };
+
+        const month = Math.floor(dayOfYear / 30);
+        const dayInMonth = dayOfYear % 30;
+        const monthPos = positions2025[planet][month];
+        const nextMonthPos = positions2025[planet][(month + 1) % 12];
+        
+        return this.interpolateAngles(monthPos, nextMonthPos, dayInMonth / 30);
+    }
+
     public calculatePositions(): PlanetData {
         const now = new Date();
-        const dayOfYear = this.getDayOfYear(now);
-        const result: PlanetData = {};
+        // Map current date to 2025
+        const date2025 = new Date(2025, now.getMonth(), now.getDate());
         
-        for (const planet in this.dailyPositions2025) {
-            const dailyData = this.dailyPositions2025[planet];
-            const pos = this.interpolateDailyPosition(
-                dailyData.positions[dayOfYear],
-                dailyData.positions[dayOfYear + 1] || dailyData.positions[0],
-                now
-            );
-            
-            // Include retrograde information in the speed value
-            const speed = dailyData.isRetrograde[dayOfYear] ? -1 : 1;
-            result[planet] = [pos, speed];
+        const result: PlanetData = {};
+        const planets = Object.keys(ephemeris2025);
+        
+        for (const planet of planets) {
+            const [position, isRetrograde] = getPlanetPosition(planet, date2025);
+            result[planet] = [position, isRetrograde ? -1 : 1];
         }
         
         return result;

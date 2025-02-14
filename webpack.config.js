@@ -1,6 +1,11 @@
-const path = require('path')
+import path from 'path';
+import TerserPlugin from 'terser-webpack-plugin';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   entry: './project/src/index.ts',
   module: {
     rules: [
@@ -21,7 +26,20 @@ module.exports = {
     filename: 'astrochart.js',
     library: {
       name: 'astrochart',
-      type: 'umd'
-    }
+      type: 'umd',
+      export: 'default'
+    },
+    globalObject: 'this'
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserPlugin({
+      terserOptions: {
+        format: {
+          comments: false,
+        },
+      },
+      extractComments: false,
+    })],
   },
 }
